@@ -1,4 +1,5 @@
 const express = require('express');
+const authToken = require('../middleware/auth'); 
 const router = express.Router();
 
 const {
@@ -9,14 +10,12 @@ const {
   deleteTask,
 } = require('../controllers/task.controller');
 
-router.get('/tasks', getTasks);
+router.use(authToken); 
 
-router.post('/tasks', createTask);
-
-router.get('/tasks/:id', getTask);
-
-router.put('/tasks/:id', updateTask);
-
-router.delete('/tasks/:id', deleteTask);
+router.get('/', getTasks); 
+router.post('/', createTask); 
+router.get('/:id', getTask); 
+router.put('/:id', updateTask); 
+router.delete('/:id', deleteTask);
 
 module.exports = router;

@@ -1,7 +1,21 @@
-const express = require("express");
-const app = express();
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
-app.use(express.json());
+const authenticateToken = (req, res, next) => {
+  const token = req.header('Authorization') && req.header('Authorization').split(' ')[1];
 
-const authRoutes = require('./routes/auth.routes');
-app.use('/auth', authRoutes);
+  if (!token) {
+    return res.status(403).json({ message: 'Acceso denegado. No hay token.' });
+  }
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Token inválido.' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+module.exports = authenticateToken;

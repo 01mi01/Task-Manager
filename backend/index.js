@@ -3,10 +3,12 @@ const app = express();
 
 const userRoutes = require('./routes/user.routes');
 const taskRoutes = require('./routes/task.routes');
+const authToken = require('./middleware/auth');
 
 app.use(express.json());
-app.use(userRoutes);
-app.use(taskRoutes);
+
+app.use('/api/auth', userRoutes);  
+app.use('/api/tasks', authToken, taskRoutes); 
 
 const PORT = process.env.PORT || 3000;
 
