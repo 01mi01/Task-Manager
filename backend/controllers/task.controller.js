@@ -13,17 +13,13 @@ exports.getTasks = async (req, res) => {
 
 exports.createTask = async (req, res) => {
   try {
-    const { title, description, color, status, dueDate } = req.body;
-
-    if (!title || !description || !color || !status || !dueDate) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+    const { title, description, color, state, dueDate } = req.body;
 
     const task = await Task.create({
       title,
       description,
       color, 
-      status,
+      state,
       dueDate,
       userId: req.user.id,
     });
@@ -48,16 +44,51 @@ exports.getTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
+    const { title, description, state, color, dueDate } = req.body;
+
     const task = await Task.findOne({
       where: { id: req.params.id, userId: req.user.id },
     });
 
-    if (!task) return res.status(404).json({ error: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
 
-    await task.update(req.body);
+    if (task.state === 'completed') {
+      return res.status(400).json({
+        error: 'Completed tasks cannot be updated',
+      });
+    }
 
-    res.json(task);
+    const currentState = task.state;
+
+    if (state) {
+      if (
+        (state === 'in progress' && currentState !== 'pending') ||
+        (currentState === 'in progress' && state === 'pending') ||
+        (currentState === 'completed' && state !== 'completed') ||
+        (state === 'completed' && currentState !== 'in progress')
+      ) {
+        return res.status(400).json({
+          error: `Cannot change task state from ${currentState} to ${state}`,
+        });
+      }
+      task.state = state;
+    }
+
+    if (title) task.title = title;
+    if (description) task.description = description;
+    if (color) task.color = color;
+    if (dueDate) task.dueDate = dueDate;
+
+    const result = await task.save();
+
+    res.status(200).json({
+      message: 'Task updated successfully',
+      task: result,
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error updating task' });
   }
 };
@@ -65,12 +96,12 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOne({
-      where: { id: req.params.id, userId: req.user.id }, 
+      where: { id: req.params.id, userId: req.user.id },
     });
 
     if (!task) return res.status(404).json({ error: 'Task not found' });
 
-    if (task.status !== 'completada') {
+    if (task.state !== 'completed') { 
       return res.status(400).json({ error: 'Only completed tasks can be deleted' });
     }
 
