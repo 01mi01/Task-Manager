@@ -26,9 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: [[
             "light",
-            "dark",
-            "academia",
-            "lo-fi"
+            "dark"
           ]],
         },
       },

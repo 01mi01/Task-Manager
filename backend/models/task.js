@@ -44,20 +44,6 @@ module.exports = (sequelize, DataTypes) => {
       dueDate: {
         type: DataTypes.DATEONLY,
         allowNull: true,
-        validate: {
-          isDate: true, 
-          isTodayOrLater(value) {
-            const inputDate = new Date(value); 
-            const today = new Date();
-    
-            const inputDateStr = inputDate.toISOString().split('T')[0]; 
-            const todayStr = today.toISOString().split('T')[0]; 
-    
-            if (inputDateStr < todayStr) {
-              throw new Error("Due date must be today or later");
-            }
-          }
-        }
       },
       userId: {
         type: DataTypes.INTEGER,
