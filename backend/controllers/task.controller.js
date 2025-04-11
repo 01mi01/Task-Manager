@@ -1,14 +1,32 @@
 const { Task } = require('../models');
+const { Op } = require('sequelize');
 
 exports.getTasks = async (req, res) => {
   try {
-    const { state, dueDate, color } = req.query;
+    const { state, dueDate, color, startDate, endDate, search } = req.query;
 
     const filter = { userId: req.user.id };
 
     if (state) filter.state = state;
-    if (dueDate) filter.dueDate = dueDate;
     if (color) filter.color = color;
+    if (dueDate) filter.dueDate = dueDate;
+
+    if (startDate && endDate) {
+      filter.dueDate = {
+        [Op.between]: [startDate, endDate],
+      };
+    }
+
+    if (search) {
+      const searchTerms = search.split(' ').map(term => `%${term}%`); 
+
+      filter[Op.or] = searchTerms.map(term => ({
+        [Op.or]: [
+          { title: { [Op.iLike]: term } },
+          { description: { [Op.iLike]: term } },
+        ],
+      }));
+    }
 
     const tasks = await Task.findAll({
       where: filter,
@@ -20,6 +38,7 @@ exports.getTasks = async (req, res) => {
 
     res.json(tasks);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error fetching tasks' });
   }
 };
