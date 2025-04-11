@@ -2,9 +2,22 @@ const { Task } = require('../models');
 
 exports.getTasks = async (req, res) => {
   try {
+    const { state, dueDate, color } = req.query;
+
+    const filter = { userId: req.user.id };
+
+    if (state) filter.state = state;
+    if (dueDate) filter.dueDate = dueDate;
+    if (color) filter.color = color;
+
     const tasks = await Task.findAll({
-      where: { userId: req.user.id }, 
+      where: filter,
     });
+
+    if (tasks.length === 0) {
+      return res.status(404).json({ error: 'No tasks found' });
+    }
+
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching tasks' });
