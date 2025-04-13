@@ -24,18 +24,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen bg-[#131315] relative">
-      <div className="absolute w-[500px] h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#131315] relative px-4 sm:px-6">
+      <div className="absolute w-[280px] sm:w-[400px] lg:w-[500px] h-[280px] sm:h-[400px] lg:h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse" />
+
       <Navbar />
 
-      <div className="z-10 w-full sm:w-96 bg-white/5 p-8 rounded-2xl shadow-xl backdrop-blur-md">
+      <div className="z-10 w-full max-w-md bg-white/5 p-6 sm:p-8 rounded-2xl shadow-xl backdrop-blur-md">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-semibold text-white">Log in to your account</h2>
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+            Log in to your account
+          </h2>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-white"
+            >
               Email address
             </label>
             <input
@@ -51,7 +57,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-white"
+            >
               Password
             </label>
             <input
@@ -78,7 +87,10 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-white/60">
           Don't have an account?{" "}
-          <a href="/register" className="font-semibold text-[#787bff] hover:underline">
+          <a
+            href="/register"
+            className="font-semibold text-[#787bff] hover:underline"
+          >
             Sign up here
           </a>
         </p>

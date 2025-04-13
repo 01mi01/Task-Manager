@@ -3,7 +3,7 @@ import axios from "../axios";
 
 import DashboardNavbar from "./DashboardNavbar";
 
-function TestDashboard() {
+function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -102,28 +102,139 @@ function TestDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen bg-[#131315] relative">
-      <div className="absolute w-[500px] h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse"></div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#131315] relative">
+      <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse transform -translate-x-1/2 -translate-y-1/2"></div>
 
       <DashboardNavbar />
 
-      <h2 className="text-3xl font-bold mb-6 text-white z-10 text-center">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-24 sm:mt-32 md:mt-32 lg:mt-28 lg:mb-4 text-white z-10 text-center">
         Your Tasks
       </h2>
 
+      <button
+        onClick={() => setShowForm(!showForm)}
+        className="text-white px-6 py-2 rounded mt-4 sm:mt-6 mb-4 sm:mb-8 z-10"
+      >
+        {showForm ? "Go back" : "Add Task"}
+      </button>
+
+      {showForm && (
+        <form
+          onSubmit={handleCreateTask}
+          className="mt-4 w-full max-w-xl z-10 space-y-4 mx-68 sm:mx-6 md:mx-12 lg:mx-24"
+        >
+          <div>
+            <label htmlFor="title" className="text-white">
+              Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={newTask.title}
+              onChange={(e) =>
+                setNewTask({ ...newTask, title: e.target.value })
+              }
+              required
+              className="border p-2 mt-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="description" className="text-white">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={newTask.description}
+              onChange={(e) =>
+                setNewTask({ ...newTask, description: e.target.value })
+              }
+              className="border p-2 mt-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="color" className="text-white">
+              Color
+            </label>
+            <select
+              id="color"
+              value={newTask.color}
+              onChange={(e) =>
+                setNewTask({ ...newTask, color: e.target.value })
+              }
+              className="border p-2 mt-2 w-full "
+            >
+              <option
+                value=""
+                style={{ backgroundColor: "#0f1011", color: "white" }}
+              >
+                Choose a color
+              </option>
+              {[
+                "red",
+                "orange",
+                "yellow",
+                "green",
+                "mint",
+                "teal",
+                "cyan",
+                "blue",
+                "indigo",
+                "purple",
+                "pink",
+                "brown",
+              ].map((color) => (
+                <option
+                  key={color}
+                  value={color}
+                  style={{ backgroundColor: "#0f1011", color: "white" }}
+                >
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="dueDate" className="text-white">
+              Due Date
+            </label>
+            <input
+              id="dueDate"
+              type="date"
+              value={newTask.dueDate}
+              onChange={(e) =>
+                setNewTask({ ...newTask, dueDate: e.target.value })
+              }
+              className="border p-2 mt-2 w-full"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="text-white px-6 py-2 rounded mt-6 mb-12 z-10"
+          >
+            Create Task
+          </button>
+        </form>
+      )}
+
       {tasks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-10 w-full max-w-7xl">
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-xl p-6 transition duration-300 hover:scale-[1.02]"
+              className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl mx-2 mb-6 shadow-xl p-4 sm:p-6 transition duration-300 hover:scale-[1.02]"
             >
-              <h3 className="text-xl font-semibold text-white">{task.title}</h3>
-              <p className="text-purple-300 mt-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-white">
+                {task.title}
+              </h3>
+              <p className="mt-2">
                 <strong>Description:</strong>{" "}
                 {task.description || "No description"}
               </p>
-              <p className="text-purple-300 mt-1">
+              <p className="mt-1">
                 <strong>Color:</strong>{" "}
                 <span
                   className="px-2 py-1 rounded text-white"
@@ -132,10 +243,10 @@ function TestDashboard() {
                   {task.color || "None"}
                 </span>
               </p>
-              <p className="text-purple-300 mt-1">
+              <p className="mt-1">
                 <strong>Due Date:</strong> {task.dueDate || "No due date"}
               </p>
-              <p className="text-purple-300 mt-1">
+              <p className="mt-1">
                 <strong>State:</strong>{" "}
                 <span className="capitalize">{task.state}</span>
               </p>
@@ -150,25 +261,25 @@ function TestDashboard() {
               ) : (
                 <button
                   onClick={() => handleEditClick(task)}
-                  className="mt-4 w-full bg-[#67d4cf] hover:bg-[#50b7a1] text-white py-2 rounded-lg"
+                  className="mt-4 w-full text-white py-2 rounded-lg"
                 >
                   Update
                 </button>
               )}
 
               {confirmDelete === task.id && (
-                <div className="mt-4 bg-gray-800/60 p-4 rounded-lg text-sm text-purple-100">
+                <div className="mt-4 p-4 rounded-lg text-sm flex flex-col items-center justify-center">
                   <p>Are you sure you want to delete this task?</p>
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-2 flex flex-col sm:flex-row gap-2 justify-center items-center">
                     <button
                       onClick={handleConfirmDelete}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                      className="text-white px-3 py-1 rounded"
                     >
                       Yes
                     </button>
                     <button
                       onClick={handleCancelDelete}
-                      className="bg-purple-300 text-gray-900 px-3 py-1 rounded"
+                      className="text-white px-3 py-1 rounded"
                     >
                       No
                     </button>
@@ -177,7 +288,7 @@ function TestDashboard() {
               )}
 
               {editingTaskId === task.id && (
-                <form className="mt-4 space-y-4 text-purple-200">
+                <form className="mt-4 space-y-4">
                   <div>
                     <label htmlFor={`edit-title-${task.id}`}>Title</label>
                     <input
@@ -187,7 +298,7 @@ function TestDashboard() {
                       onChange={(e) =>
                         setEditTask({ ...editTask, title: e.target.value })
                       }
-                      className="w-full p-2 bg-white/10 text-white border border-[#67d4cf] rounded"
+                      className="w-full p-2 bg-white/10 text-white border rounded"
                     />
                   </div>
 
@@ -204,7 +315,7 @@ function TestDashboard() {
                           description: e.target.value,
                         })
                       }
-                      className="w-full p-2 bg-white/10 text-white border border-[#67d4cf] rounded"
+                      className="w-full p-2 bg-white/10 text-white border rounded"
                     />
                   </div>
 
@@ -216,9 +327,14 @@ function TestDashboard() {
                       onChange={(e) =>
                         setEditTask({ ...editTask, color: e.target.value })
                       }
-                      className="w-full p-2 bg-white/10 text-white border border-[#67d4cf] rounded"
+                      className="w-full p-2 bg-white/10 text-white border rounded"
                     >
-                      <option value="">Choose a color</option>
+                      <option
+                        value=""
+                        style={{ backgroundColor: "#0f1011", color: "white" }}
+                      >
+                        Choose a color
+                      </option>
                       {[
                         "red",
                         "orange",
@@ -236,7 +352,7 @@ function TestDashboard() {
                         <option
                           key={color}
                           value={color}
-                          style={{ backgroundColor: color, color: "white" }}
+                          style={{ backgroundColor: "#0f1011", color: "white" }}
                         >
                           {color.charAt(0).toUpperCase() + color.slice(1)}
                         </option>
@@ -253,7 +369,7 @@ function TestDashboard() {
                       onChange={(e) =>
                         setEditTask({ ...editTask, dueDate: e.target.value })
                       }
-                      className="w-full p-2 bg-white/10 text-white border border-[#67d4cf] rounded"
+                      className="w-full p-2 bg-white/10 text-white border rounded"
                     />
                   </div>
 
@@ -308,16 +424,12 @@ function TestDashboard() {
                         });
                         setError("");
                       } catch (err) {
-                        if (err.response) {
-                          setError(
-                            err.response.data?.error || "Error updating task."
-                          );
-                        } else {
-                          setError("Network error or other issue");
-                        }
+                        setError(
+                          err.response?.data?.error || "Error updating task."
+                        );
                       }
                     }}
-                    className="bg-purple-600 text-white px-4 py-2 rounded mt-4"
+                    className="text-white px-4 py-2 rounded mt-4"
                   >
                     Save Changes
                   </button>
@@ -327,109 +439,12 @@ function TestDashboard() {
           ))}
         </div>
       ) : (
-        <p className="text-center text-white">No tasks available.</p>
+        <p className="text-center text-white z-10 max-w-md">
+          You don't have any tasks yet. Create a new one.
+        </p>
       )}
-
-<button
-  onClick={() => setShowForm(!showForm)}
-  className="bg-purple-500 text-white px-4 py-2 rounded mt-4"
-  style={{ zIndex: 10 }} 
->
-  {showForm ? "Cancel" : "Add Task"}
-</button>
-
-{showForm && (
-  <form
-    onSubmit={handleCreateTask}
-    className="mt-4"
-    style={{ zIndex: 10 }} 
-  >
-    <div>
-      <label htmlFor="title">Title</label>
-      <input
-        id="title"
-        type="text"
-        value={newTask.title}
-        onChange={(e) =>
-          setNewTask({ ...newTask, title: e.target.value })
-        }
-        required
-        className="border border-purple-400 p-2 mt-2 w-full text-purple-700"
-      />
-    </div>
-
-    <div>
-      <label htmlFor="description">Description</label>
-      <textarea
-        id="description"
-        value={newTask.description}
-        onChange={(e) =>
-          setNewTask({ ...newTask, description: e.target.value })
-        }
-        className="border border-purple-400 p-2 mt-2 w-full text-purple-700"
-      />
-    </div>
-
-    <div>
-      <label htmlFor="color">Color</label>
-      <select
-        id="color"
-        value={newTask.color}
-        onChange={(e) =>
-          setNewTask({ ...newTask, color: e.target.value })
-        }
-        className="border border-purple-400 p-2 mt-2 w-full text-purple-700"
-      >
-        <option value="">Choose a color</option>
-        {[
-          "red",
-          "orange",
-          "yellow",
-          "green",
-          "mint",
-          "teal",
-          "cyan",
-          "blue",
-          "indigo",
-          "purple",
-          "pink",
-          "brown",
-        ].map((color) => (
-          <option
-            key={color}
-            value={color}
-            style={{ backgroundColor: color, color: "white" }}
-          >
-            {color.charAt(0).toUpperCase() + color.slice(1)}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    <div>
-      <label htmlFor="dueDate">Due Date</label>
-      <input
-        id="dueDate"
-        type="date"
-        value={newTask.dueDate}
-        onChange={(e) =>
-          setNewTask({ ...newTask, dueDate: e.target.value })
-        }
-        className="border border-purple-400 p-2 mt-2 w-full text-purple-700"
-      />
-    </div>
-
-    <button
-      type="submit"
-      className="bg-purple-600 text-white px-4 py-2 rounded mt-4"
-    >
-      Create Task
-    </button>
-  </form>
-)}
-
     </div>
   );
 }
 
-export default TestDashboard;
+export default Dashboard;

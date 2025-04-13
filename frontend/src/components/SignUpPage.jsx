@@ -22,14 +22,14 @@ export default function SignUpPage() {
       });
       console.log("Registration successful:", response.data);
       setSuccess("Registration successful!");
-      setError(""); 
+      setError("");
       setName("");
       setEmail("");
       setPassword("");
       navigate("/login");
     } catch (err) {
       console.error("Registration error:", err);
-      setSuccess(""); 
+      setSuccess("");
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
@@ -39,13 +39,16 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen bg-[#131315] relative">
-      <div className="absolute w-[500px] h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#131315] relative px-4 sm:px-6">
+      <div className="absolute w-[280px] sm:w-[400px] lg:w-[500px] h-[280px] sm:h-[400px] lg:h-[500px] bg-[#787bff] opacity-30 rounded-full blur-2xl animate-pulse" />
+
       <Navbar />
 
-      <div className="z-10 w-full sm:w-96 bg-white/5 p-8 rounded-2xl shadow-xl backdrop-blur-md">
+      <div className="z-10 w-full max-w-md bg-white/5 p-6 sm:p-8 rounded-2xl shadow-xl backdrop-blur-md">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-semibold text-white">Create your account</h2>
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+            Create your account
+          </h2>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-6">
