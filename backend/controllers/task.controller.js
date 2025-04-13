@@ -1,5 +1,5 @@
-const { Task } = require('../models');
-const { Op } = require('sequelize');
+const { Task } = require("../models");
+const { Op } = require("sequelize");
 
 exports.getTasks = async (req, res) => {
   try {
@@ -18,9 +18,9 @@ exports.getTasks = async (req, res) => {
     }
 
     if (search) {
-      const searchTerms = search.split(' ').map(term => `%${term}%`); 
+      const searchTerms = search.split(" ").map((term) => `%${term}%`);
 
-      filter[Op.or] = searchTerms.map(term => ({
+      filter[Op.or] = searchTerms.map((term) => ({
         [Op.or]: [
           { title: { [Op.iLike]: term } },
           { description: { [Op.iLike]: term } },
@@ -33,13 +33,13 @@ exports.getTasks = async (req, res) => {
     });
 
     if (tasks.length === 0) {
-      return res.status(404).json({ error: 'No tasks found' });
+      return res.status(404).json({ error: "No tasks found" });
     }
 
     res.json(tasks);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error fetching tasks' });
+    res.status(500).json({ error: "Error fetching tasks" });
   }
 };
 
@@ -50,7 +50,7 @@ exports.createTask = async (req, res) => {
     const task = await Task.create({
       title,
       description,
-      color, 
+      color,
       state,
       dueDate,
       userId: req.user.id,
@@ -58,7 +58,7 @@ exports.createTask = async (req, res) => {
 
     res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating task' });
+    res.status(500).json({ error: "Error creating task" });
   }
 };
 
@@ -68,9 +68,9 @@ exports.getTask = async (req, res) => {
       where: { id: req.params.id, userId: req.user.id },
     });
 
-    task ? res.json(task) : res.status(404).json({ error: 'Task not found' });
+    task ? res.json(task) : res.status(404).json({ error: "Task not found" });
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching task' });
+    res.status(500).json({ error: "Error fetching task" });
   }
 };
 
@@ -83,12 +83,12 @@ exports.updateTask = async (req, res) => {
     });
 
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return res.status(404).json({ error: "Task not found" });
     }
 
-    if (task.state === 'completed') {
+    if (task.state === "completed") {
       return res.status(400).json({
-        error: 'Completed tasks cannot be updated',
+        error: "Completed tasks cannot be updated",
       });
     }
 
@@ -96,10 +96,12 @@ exports.updateTask = async (req, res) => {
 
     if (state) {
       if (
-        (state === 'in progress' && currentState !== 'pending') ||
-        (currentState === 'in progress' && state === 'pending') ||
-        (currentState === 'completed' && state !== 'completed') ||
-        (state === 'completed' && currentState !== 'in progress')
+        (state === "in progress" &&
+          currentState !== "pending" &&
+          currentState !== "in progress") ||
+        (currentState === "in progress" && state === "pending") ||
+        (currentState === "completed" && state !== "completed") ||
+        (state === "completed" && currentState !== "in progress")
       ) {
         return res.status(400).json({
           error: `Cannot change task state from ${currentState} to ${state}`,
@@ -116,12 +118,12 @@ exports.updateTask = async (req, res) => {
     const result = await task.save();
 
     res.status(200).json({
-      message: 'Task updated successfully',
+      message: "Task updated successfully",
       task: result,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error updating task' });
+    res.status(500).json({ error: "Error updating task" });
   }
 };
 
@@ -131,15 +133,17 @@ exports.deleteTask = async (req, res) => {
       where: { id: req.params.id, userId: req.user.id },
     });
 
-    if (!task) return res.status(404).json({ error: 'Task not found' });
+    if (!task) return res.status(404).json({ error: "Task not found" });
 
-    if (task.state !== 'completed') { 
-      return res.status(400).json({ error: 'Only completed tasks can be deleted' });
+    if (task.state !== "completed") {
+      return res
+        .status(400)
+        .json({ error: "Only completed tasks can be deleted" });
     }
 
     await task.destroy();
-    res.json({ message: 'Task successfully deleted' });
+    res.json({ message: "Task successfully deleted" });
   } catch (error) {
-    res.status(500).json({ error: 'Error deleting task' });
+    res.status(500).json({ error: "Error deleting task" });
   }
 };
